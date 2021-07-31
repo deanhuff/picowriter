@@ -25,7 +25,7 @@ Picowriter is a battery powered eink typewriter.  Similar to a *[Freewrite](http
 - Bluetooth module
 - Wifi module
 - Rechargable battery module
-- USB to SPI module
+- USB keyboard input via Pico USB HID Host
 - 3 way switch
 - Power button
 - Bluetoothe Pairing button
