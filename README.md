@@ -15,6 +15,9 @@ Picowriter is a battery powered eink typewriter.  Similar to a *[Freewrite](http
 - Great battery life measured in weeks
 - Eink screen
 
+## Project Timeline
+- infinite
+
 ## Hardware
 - Raspberry pi pico
 - Eink SPI display module
