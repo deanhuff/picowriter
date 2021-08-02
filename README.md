@@ -7,8 +7,9 @@ Picowriter is a battery powered eink typewriter.  Similar to a *[Freewrite](http
 ## Project Goals
 - Create and Edit text documents.
 - Document management
-  - Create new, edit & delete existing documents
+  - Create new, edit & delete existing documents on device
   - Sync files with to a PC via a host application
+  - Read / Write documents via USB Mass Storage Mount
 - Connect to terminal servers via a SSH terminal
   - ssh configuration and key management 
 - Use either mobile or at your desk
@@ -29,7 +30,7 @@ Picowriter is a battery powered eink typewriter.  Similar to a *[Freewrite](http
 - USB keyboard input via Pico USB HID Host
 - 3 way switch
 - Power button
-- Bluetoothe Pairing button
+- Bluetooth Pairing button
 
 ## Software features
 - Document metadata
