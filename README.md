@@ -2,7 +2,7 @@
 
 ## Description
 
-Picowriter is a battery powered eink typewriter.  Similar to a *[Freewrite](https://getfreewrite.com/products/freewrite-smart-typewriter "Freewrite Smart Typewriter")* or *[Alphasmart](https://en.wikipedia.org/wiki/AlphaSmart "Alphasmart")*, the Picowriter is intended for writing.  Unlike these devices, the Picowriter does not have an integrated keyboard.  Rather, you bring your own USB or Bluetooth keyboard for use with the Picowriter.
+Picowrite is a battery powered eink typewriter.  Similar to a *[Freewrite](https://getfreewrite.com/products/freewrite-smart-typewriter "Freewrite Smart Typewriter")* or *[Alphasmart](https://en.wikipedia.org/wiki/AlphaSmart "Alphasmart")*, the Picowriter is intended for writing.  Unlike these devices, the Picowriter does not have an integrated keyboard.  Rather, you bring your own USB or Bluetooth keyboard for use with the Picowriter.
 
 ## Project Goals
 - Create and Edit text documents.
