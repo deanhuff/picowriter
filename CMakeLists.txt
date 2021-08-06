@@ -1,25 +1,29 @@
 cmake_minimum_required(VERSION 3.5)
 
-#set(BOARD "raspberry_pi_pico")
-#set(FAMILY "rp2040")
+set(BOARD "raspberry_pi_pico")
+set(FAMILY "rp2040")
 
 include(pico_sdk_import.cmake)
+#include($ENV{PICO_EXAMPLES_PATH}/example_auto_set_url.cmake)
+include($ENV{PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
+include_directories($ENV{PICO_SDK_PATH}/lib/tinyusb/lib/tinyusb/src)
 
-#include($ENV{PICO_SDK_PATH}/lib/tinyusb/hw/bsp/family_support.cmake)
-#include_directories($ENV{PICO_SDK_PATH}/lib/tinyusb/lib/tinyusb/src)
-#family_get_project_name(PROJECT ${CMAKE_CURRENT_LIST_DIR})
-project("picowrite")
+project("raspberry_pi_pico-picowrite")
 
-pico_sdk_init()
-#family_initialize_project(${PROJECT} ${CMAKE_CURRENT_LIST_DIR})
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
+#pico_sdk_init()
+family_initialize_project("raspberry_pi_pico-picowrite" ${CMAKE_CURRENT_LIST_DIR})
 
-add_executable(test-usb_host_hid src/test/usb_host_hid.c)
+add_executable(raspberry_pi_pico-picowrite src/test/usb_host_hid.c src/test/hid_app.c)
+
+include_directories(${CMAKE_CURRENT_LIST_DIR}/src/test)
 
 # Add pico_stdlib library which aggregates commonly used features
-target_link_libraries(test-usb_host_hid pico_stdlib)
+#target_link_libraries(raspberry_pi_pico-picowrite pico_stdlib tinyusb_host tinyusb_board)
 
 # create map/bin/hex/uf2 file in addition to ELF.
-pico_add_extra_outputs(test-usb_host_hid)
-
-#family_configure_host_example(${PROJECT})
+pico_add_extra_outputs(raspberry_pi_pico-picowrite)
+#example_auto_set_url(test-usb_host_hid)
+family_configure_host_example("raspberry_pi_pico-picowrite")
