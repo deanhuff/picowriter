@@ -29,12 +29,16 @@
 
 #include "bsp/board.h"
 #include "tusb.h"
+#include "EPD_Test.h"
 
 void print_greeting(void);
 void led_blinking_task(void);
 extern void hid_app_task(void);
 
 int main(void) {
+    DEV_Delay_ms(500);
+    EPD_2in9_V2_test();
+
     board_init();
     print_greeting();
 
@@ -48,6 +52,7 @@ int main(void) {
 #if CFG_TUH_HID_KEYBOARD || CFG_TUH_HID_MOUSE
         hid_app_task();
 #endif
+
     }
 
     return 0;

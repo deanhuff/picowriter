@@ -16,9 +16,21 @@ set(CMAKE_CXX_STANDARD 17)
 #pico_sdk_init()
 family_initialize_project("raspberry_pi_pico-picowrite" ${CMAKE_CURRENT_LIST_DIR})
 
-add_executable(raspberry_pi_pico-picowrite src/test/usb_host_hid.c src/test/hid_app.c)
+# add a compilation subdirectory
+add_subdirectory(src/waveshare_eink/c/lib/Config)
+add_subdirectory(src/waveshare_eink/c/lib/e-Paper)
+add_subdirectory(src/waveshare_eink/c/lib/Fonts)
+add_subdirectory(src/waveshare_eink/c/lib/GUI)
+add_subdirectory(src/waveshare_eink/c/examples)
 
-include_directories(${CMAKE_CURRENT_LIST_DIR}/src/test)
+# add a header directory
+include_directories(src/waveshare_eink/c/examples)
+include_directories(src/waveshare_eink/c/lib/Config)
+include_directories(src/waveshare_eink/c/lib/GUI)
+
+add_executable(raspberry_pi_pico-picowrite src/picowriter/picowriter.c src/picowriter/hid_app.c)
+
+include_directories(${CMAKE_CURRENT_LIST_DIR}/src/picowriter)
 
 # Add pico_stdlib library which aggregates commonly used features
 #target_link_libraries(raspberry_pi_pico-picowrite pico_stdlib tinyusb_host tinyusb_board)
@@ -26,4 +38,5 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/src/test)
 # create map/bin/hex/uf2 file in addition to ELF.
 pico_add_extra_outputs(raspberry_pi_pico-picowrite)
 #example_auto_set_url(test-usb_host_hid)
-family_configure_host_example("raspberry_pi_pico-picowrite")
+#family_configure_host_example("raspberry_pi_pico-picowrite")
+target_link_libraries(raspberry_pi_pico-picowrite examples ePaper GUI Fonts Config pico_stdlib tinyusb_host tinyusb_board)
