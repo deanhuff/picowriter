@@ -25,6 +25,7 @@ add_subdirectory(src/waveshare_eink/c/examples)
 
 # add a header directory
 include_directories(src/waveshare_eink/c/examples)
+include_directories(src/waveshare_eink/c/lib/e-Paper)
 include_directories(src/waveshare_eink/c/lib/Config)
 include_directories(src/waveshare_eink/c/lib/GUI)
 
