@@ -35,31 +35,33 @@
 void print_greeting(void);
 void led_blinking_task(void);
 extern void hid_app_task(void);
+extern void eink_init();
 
 int main(void) {
-    //intiialize waveshare Eink
-    DEV_Delay_ms(500);
-    //play demo on screen
-    //TODO get rid of the waveshare pictures
-    //EPD_2in9_V2_test();
-    DEV_Module_Init();
-    EPD_2IN9_V2_Init();
-    EPD_2IN9_V2_Clear();
+    //intialize waveshare Eink
+    eink_init(); 
 
-    //Create a new image cache
-    UBYTE *BlackImage;
-    UWORD Imagesize = ((EPD_2IN9_V2_WIDTH % 8 == 0)? (EPD_2IN9_V2_WIDTH / 8 ): (EPD_2IN9_V2_WIDTH / 8 + 1)) * EPD_2IN9_V2_HEIGHT;
-    if((BlackImage = (UBYTE *)malloc(Imagesize)) == NULL) {
-        printf("Failed to apply for black memory...\r\n");
-        return -1;
-    }
-    printf("Paint_NewImage\r\n");
-    Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);
-    Paint_Clear(WHITE);
-    Paint_DrawString_EN(10, 0, "Picowriter", &Font24, WHITE, BLACK);
-
-    EPD_2IN9_V2_Display_Base(BlackImage);
-
+//    DEV_Delay_ms(500);
+//    //play demo on screen
+//    //TODO get rid of the waveshare pictures
+//    //EPD_2in9_V2_test();
+//    DEV_Module_Init();
+//    EPD_2IN9_V2_Init();
+//    EPD_2IN9_V2_Clear();
+//
+//    //Create a new image cache
+//    UWORD Imagesize = ((EPD_2IN9_V2_WIDTH % 8 == 0)? (EPD_2IN9_V2_WIDTH / 8 ): (EPD_2IN9_V2_WIDTH / 8 + 1)) * EPD_2IN9_V2_HEIGHT;
+//    if((BlackImage = (UBYTE *)malloc(Imagesize)) == NULL) {
+//        printf("Failed to apply for black memory...\r\n");
+//        return -1;
+//    }
+//    printf("Paint_NewImage\r\n");
+//    Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);
+//    Paint_Clear(WHITE);
+//    Paint_DrawString_EN(10, 0, "Picowriter", &Font24, WHITE, BLACK);
+//
+//    EPD_2IN9_V2_Display_Base(BlackImage);
+//
     //initialize pico
     board_init();
    

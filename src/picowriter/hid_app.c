@@ -25,6 +25,8 @@
 
 #include "bsp/board.h"
 #include "tusb.h"
+#include "EPD_2in9_V2.h"
+#include "EPD_Test.h"
 
 //--------------------------------------------------------------------+
 // MACRO TYPEDEF CONSTANT ENUM DECLARATION
@@ -38,6 +40,8 @@
 
 //exists next to main
 extern void led_blinking_task(void); 
+extern void eink_print(uint8_t ch);
+//extern UBYTE *BlackImage;
 
 static uint8_t const keycode2ascii[128][2] =  { HID_KEYCODE_TO_ASCII };
 
@@ -128,10 +132,20 @@ static inline bool find_key_in_report(hid_keyboard_report_t const *report, uint8
   return false;
 }
 
+static int cursor=0;
 static void process_kbd_report(hid_keyboard_report_t const *report)
 {
   static hid_keyboard_report_t prev_report = { 0, 0, {0} }; // previous report to check key released
 
+
+  //Create a new image cache
+//  static UBYTE *BlackImage;
+//  static UWORD Imagesize = ((EPD_2IN9_V2_WIDTH % 8 == 0)? (EPD_2IN9_V2_WIDTH / 8 ): (EPD_2IN9_V2_WIDTH / 8 + 1)) * EPD_2IN9_V2_HEIGHT;
+//    if((BlackImage = (UBYTE *)malloc(Imagesize)) == NULL) {
+//        printf("Failed to apply for black memory...\r\n");
+//        return -1;
+//    }
+  
   //------------- example code ignore control (non-printable) key affects -------------//
   for(uint8_t i=0; i<6; i++)
   {
@@ -145,12 +159,27 @@ static void process_kbd_report(hid_keyboard_report_t const *report)
         // not existed in previous report means the current key is pressed
         bool const is_shift = report->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
         uint8_t ch = keycode2ascii[report->keycode[i]][is_shift ? 1 : 0];
+
+	led_blinking_task();
+
+        eink_print(ch);
+//	if(cursor==0){
+//	  Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);
+//	  Paint_Clear(WHITE);
+//	  Paint_SelectImage(BlackImage);
+//	}
+//
+//	//send keystroke to epaper
+//        Paint_ClearWindows(10+(cursor*Font24.Width), 20, 10 + Font24.Width, 20 + Font24.Height, WHITE);
+//        Paint_DrawString_EN(10+(cursor*Font24.Width),20, &ch, &Font24, WHITE, BLACK);
+//	EPD_2IN9_V2_Display_Partial(BlackImage);
+//	cursor+=1;
+
         putchar(ch);
         if ( ch == '\r' ) putchar('\n'); // added new line for enter key
 
         fflush(stdout); // flush right away, else nanolib will wait for newline
 	//blink the LED on or off with each key press
-	led_blinking_task();
       }
     }
     // TODO example skips key released

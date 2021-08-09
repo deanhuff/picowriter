@@ -29,7 +29,7 @@ include_directories(src/waveshare_eink/c/lib/e-Paper)
 include_directories(src/waveshare_eink/c/lib/Config)
 include_directories(src/waveshare_eink/c/lib/GUI)
 
-add_executable(raspberry_pi_pico-picowrite src/picowriter/picowriter.c src/picowriter/hid_app.c)
+add_executable(raspberry_pi_pico-picowrite src/picowriter/picowriter.c src/picowriter/hid_app.c src/picowriter/eink.c)
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/src/picowriter)
 
