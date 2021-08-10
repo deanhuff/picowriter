@@ -40,8 +40,9 @@
 #define MAX_REPORT  4
 
 //exists next to main
-extern void led_blinking_task(void); 
-extern void eink_print(uint8_t ch);
+extern void led_blinking_task(void);
+extern void key_press(uint8_t ch); 
+//extern void eink_print(uint8_t ch);
 //extern UBYTE *BlackImage;
 
 static uint8_t const keycode2ascii[128][2] =  { HID_KEYCODE_TO_ASCII };
@@ -163,7 +164,10 @@ static void process_kbd_report(hid_keyboard_report_t const *report)
 
 	led_blinking_task();
 
-        multicore_fifo_push_blocking(123);
+
+        //multicore_fifo_push_blocking((uint16_t)ch);
+        key_press(ch);
+//        multicore_fifo_push_blocking(ch);
 //        eink_print(ch);
 //	if(cursor==0){
 //	  Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);

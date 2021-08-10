@@ -27,6 +27,7 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "hardware/irq.h"
+#include "hardware/adc.h"
 #include <string.h>
 
 #include "bsp/board.h"
@@ -38,32 +39,29 @@ void print_greeting(void);
 void led_blinking_task(void);
 extern void hid_app_task(void);
 extern void eink_init();
+extern void eink_print(uint8_t ch);
 
-void core1_interrupt_handler() {
+uint8_t newchar;
+bool needsPaint = false;
+bool busy = true;
 
-    // Receive Raw Value, Convert and Print Temperature Value
-    while (multicore_fifo_rvalid()){
-        uint16_t raw = multicore_fifo_pop_blocking();
-        const float conversion_factor = 3.3f / (1 << 12);
-        float result = raw * conversion_factor;
-        float temp = 27 - (result - 0.706)/0.001721;
-        printf("Temp = %f C\n", temp);
-    }
-
-    multicore_fifo_clear_irq(); // Clear interrupt
+void key_press(uint8_t key){
+  newchar = key;
+  needsPaint = true;
 }
 
-
 void core1_entry(){
-  // Configure Core 1 Interrupt
-    multicore_fifo_clear_irq();
-    irq_set_exclusive_handler(SIO_IRQ_PROC1, core1_interrupt_handler);
-
-    irq_set_enabled(SIO_IRQ_PROC1, true);
 
     // Infinte While Loop to wait for interrupt
     while (1){
-        tight_loop_contents();
+        if(needsPaint && !busy){
+        //if(needsPaint){
+          needsPaint=false;
+          printf("printing: %c\n", newchar);
+          eink_print(newchar);
+        }else{
+          sleep_ms(300);
+	}
     }
 
 }
@@ -71,9 +69,19 @@ void core1_entry(){
 int main(void) {
     stdio_init_all();
     multicore_launch_core1(core1_entry);
+    sleep_ms(1);
+    multicore_reset_core1();
+    multicore_launch_core1(core1_entry);
+
+    eink_init();
+    busy=false;
+
+//    adc_init();
+//    adc_gpio_init(13);
+//    adc_select_input(0);    
+
 
     board_init();
-    eink_init();
     tusb_init();
 
     while (1) {
