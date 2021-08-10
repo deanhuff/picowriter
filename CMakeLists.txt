@@ -13,8 +13,8 @@ project("raspberry_pi_pico-picowrite")
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-#pico_sdk_init()
-family_initialize_project("raspberry_pi_pico-picowrite" ${CMAKE_CURRENT_LIST_DIR})
+pico_sdk_init()
+#family_initialize_project("raspberry_pi_pico-picowrite" ${CMAKE_CURRENT_LIST_DIR})
 
 # add a compilation subdirectory
 add_subdirectory(src/waveshare_eink/c/lib/Config)
@@ -29,7 +29,7 @@ include_directories(src/waveshare_eink/c/lib/e-Paper)
 include_directories(src/waveshare_eink/c/lib/Config)
 include_directories(src/waveshare_eink/c/lib/GUI)
 
-add_executable(raspberry_pi_pico-picowrite src/picowriter/picowriter.c src/picowriter/hid_app.c src/picowriter/eink.c)
+add_executable(raspberry_pi_pico-picowrite src/picowriter/picowriter2.c src/picowriter/hid_app.c src/picowriter/eink.c)
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/src/picowriter)
 
@@ -40,4 +40,4 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/src/picowriter)
 pico_add_extra_outputs(raspberry_pi_pico-picowrite)
 #example_auto_set_url(test-usb_host_hid)
 #family_configure_host_example("raspberry_pi_pico-picowrite")
-target_link_libraries(raspberry_pi_pico-picowrite examples ePaper GUI Fonts Config pico_stdlib tinyusb_host tinyusb_board)
+target_link_libraries(raspberry_pi_pico-picowrite examples ePaper GUI Fonts Config pico_stdlib tinyusb_host tinyusb_board pico_multicore hardware_adc)

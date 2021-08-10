@@ -27,6 +27,7 @@
 #include "tusb.h"
 #include "EPD_2in9_V2.h"
 #include "EPD_Test.h"
+#include "pico/multicore.h"
 
 //--------------------------------------------------------------------+
 // MACRO TYPEDEF CONSTANT ENUM DECLARATION
@@ -162,7 +163,8 @@ static void process_kbd_report(hid_keyboard_report_t const *report)
 
 	led_blinking_task();
 
-        eink_print(ch);
+        multicore_fifo_push_blocking(123);
+//        eink_print(ch);
 //	if(cursor==0){
 //	  Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);
 //	  Paint_Clear(WHITE);
