@@ -23,12 +23,20 @@
  *
  */
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+//pico-sdk
+#include "pico/stdlib.h"
+#include "pico/multicore.h"
+#include "hardware/irq.h"
+//#include "hardware/adc.h"
+
+//tinyusb
 #include "bsp/board.h"
 #include "tusb.h"
+
+//waveshare eink
 #include "EPD_Test.h"
 #include "EPD_2in9_V2.h"
 
@@ -36,48 +44,66 @@ void print_greeting(void);
 void led_blinking_task(void);
 extern void hid_app_task(void);
 extern void eink_init();
+extern void eink_print();
+
+//global variables
+//uint8_t newchar;
+char model[512] = {0};
+char unprinted[128] = {0};
+int unprintedLoc = 0;
+int cursorLoc = 0;
+int printLoc = 0;
+bool needsPaint = false;
+
+void key_press(uint8_t key){
+  //newchar = key;
+  //input key press into the model
+  unprinted[unprintedLoc]=key; 
+  //TODO special case for delete, backspace, arrow to reposition the cursor.
+  unprintedLoc +=1; 
+  needsPaint = true;
+
+}
+
+void core1_entry(){
+
+    // Infinte While Loop to wait for the model to change
+    while (1){
+        if(needsPaint){
+          char printText[128] = {0};
+          strcpy(printText, unprinted);
+          memset(unprinted, 0, sizeof unprinted);
+          unprintedLoc=0;
+          needsPaint=false;
+          printf("printing: %s\n", printText);
+          eink_print(printText);
+        }else{
+          sleep_ms(20);
+	}
+    }
+
+}
 
 int main(void) {
-    //intialize waveshare Eink
-    eink_init(); 
+    stdio_init_all();
 
-//    DEV_Delay_ms(500);
-//    //play demo on screen
-//    //TODO get rid of the waveshare pictures
-//    //EPD_2in9_V2_test();
-//    DEV_Module_Init();
-//    EPD_2IN9_V2_Init();
-//    EPD_2IN9_V2_Clear();
-//
-//    //Create a new image cache
-//    UWORD Imagesize = ((EPD_2IN9_V2_WIDTH % 8 == 0)? (EPD_2IN9_V2_WIDTH / 8 ): (EPD_2IN9_V2_WIDTH / 8 + 1)) * EPD_2IN9_V2_HEIGHT;
-//    if((BlackImage = (UBYTE *)malloc(Imagesize)) == NULL) {
-//        printf("Failed to apply for black memory...\r\n");
-//        return -1;
-//    }
-//    printf("Paint_NewImage\r\n");
-//    Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);
-//    Paint_Clear(WHITE);
-//    Paint_DrawString_EN(10, 0, "Picowriter", &Font24, WHITE, BLACK);
-//
-//    EPD_2IN9_V2_Display_Base(BlackImage);
-//
-    //initialize pico
+    //double core1 launch needed to reset core 1 during a rebuild
+    multicore_launch_core1(core1_entry);
+    sleep_ms(1);
+    multicore_reset_core1();
+    multicore_launch_core1(core1_entry);
+
+    eink_init();
+
     board_init();
-   
-    print_greeting();
-
     tusb_init();
 
+    //wait for keyboard input
     while (1) {
-        // tinyusb host task
-        tuh_task();
-        //led_blinking_task();
-
-#if CFG_TUH_HID_KEYBOARD || CFG_TUH_HID_MOUSE
+      tuh_task();
+      #if CFG_TUH_HID_KEYBOARD
         hid_app_task();
-#endif
-
+      #endif
     }
 
     return 0;
@@ -104,7 +130,6 @@ void led_blinking_task(void) {
 // HELPER FUNCTION
 //--------------------------------------------------------------------+
 void print_greeting(void) {
-    printf("This Host demo is configured to support:\n");
+    printf("Picowriter is running, scanning for HID Keyboard.\n");
     if (CFG_TUH_HID_KEYBOARD) puts("  - HID Keyboard");
-    if (CFG_TUH_HID_MOUSE) puts("  - HID Mouse");
 }

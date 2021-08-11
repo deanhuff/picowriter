@@ -42,8 +42,6 @@
 //exists next to main
 extern void led_blinking_task(void);
 extern void key_press(uint8_t ch); 
-//extern void eink_print(uint8_t ch);
-//extern UBYTE *BlackImage;
 
 static uint8_t const keycode2ascii[128][2] =  { HID_KEYCODE_TO_ASCII };
 
@@ -161,31 +159,16 @@ static void process_kbd_report(hid_keyboard_report_t const *report)
         // not existed in previous report means the current key is pressed
         bool const is_shift = report->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
         uint8_t ch = keycode2ascii[report->keycode[i]][is_shift ? 1 : 0];
-
-	led_blinking_task();
-
-
-        //multicore_fifo_push_blocking((uint16_t)ch);
-        key_press(ch);
-//        multicore_fifo_push_blocking(ch);
-//        eink_print(ch);
-//	if(cursor==0){
-//	  Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);
-//	  Paint_Clear(WHITE);
-//	  Paint_SelectImage(BlackImage);
-//	}
-//
-//	//send keystroke to epaper
-//        Paint_ClearWindows(10+(cursor*Font24.Width), 20, 10 + Font24.Width, 20 + Font24.Height, WHITE);
-//        Paint_DrawString_EN(10+(cursor*Font24.Width),20, &ch, &Font24, WHITE, BLACK);
-//	EPD_2IN9_V2_Display_Partial(BlackImage);
-//	cursor+=1;
-
+        
         putchar(ch);
         if ( ch == '\r' ) putchar('\n'); // added new line for enter key
-
         fflush(stdout); // flush right away, else nanolib will wait for newline
-	//blink the LED on or off with each key press
+
+        //key_press happens in picowriter.c
+        key_press(ch);
+        //alternate pico led for each key press to show activity
+	led_blinking_task();
+
       }
     }
     // TODO example skips key released

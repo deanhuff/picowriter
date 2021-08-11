@@ -59,7 +59,7 @@ extern "C" {
 
 #define CFG_TUH_HUB                 1
 #define CFG_TUH_HID_KEYBOARD        1
-#define CFG_TUH_HID_MOUSE           1
+#define CFG_TUH_HID_MOUSE           0
 #define CFG_TUSB_HOST_HID_GENERIC   0 // (not yet supported)
 #define CFG_TUH_MSC                 0
 #define CFG_TUH_CDC                 0
