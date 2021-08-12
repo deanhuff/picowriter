@@ -72,10 +72,11 @@ void core1_entry(){
         if(needsPaint){
           char printText[128] = {0};
           strcpy(printText, unprinted);
+//          printText[strlen(printText)]='_';
           memset(unprinted, 0, sizeof unprinted);
           unprintedLoc=0;
           needsPaint=false;
-          printf("printing: %s\n", printText);
+          //printf("printing: %s\n", printText);
           eink_print(printText);
         }else{
           sleep_ms(20);

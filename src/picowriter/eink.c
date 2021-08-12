@@ -32,35 +32,15 @@ void eink_init(){
 
 }
 
-
-// Note: This function returns a pointer to a substring of the original string.
-// If the given string was allocated dynamically, the caller must not overwrite
-// that pointer with the returned value, since the original pointer must be
-// deallocated using the same allocator with which it was allocated.  The return
-// value must NOT be deallocated using free() etc.
-char *trimwhitespace(char *str)
-{
-  char *end;
-
-  // Trim leading space
-  while(isspace((unsigned char)*str)) str++;
-
-  if(*str == 0)  // All spaces?
-    return str;
-
-  // Trim trailing space
-  end = str + strlen(str) - 1;
-  while(end > str && isspace((unsigned char)*end)) end--;
-
-  // Write new null terminator character
-  end[1] = '\0';
-
-  return str;
-}
+char line0[17] = {0};
+char line1[17] = {0};
+char line2[17] = {0};
+char line3[17] = {0};
+char line4[17] = {0};
 
 void eink_print(char printText[]){
 
-  //the canvas is 6 rows by 17 columns at font 24.
+  //the canvas is 5 rows by 17 columns at font 24.
 
   if(cursorCol==0 && row==0){
     Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);
@@ -68,17 +48,70 @@ void eink_print(char printText[]){
     Paint_SelectImage(BlackImage);
   }
 
-//  char str[2] = "\0"; //give {\0,\0}
-//  str[0] = ch;
+  int printLen = strlen(printText);
+  int i=0;
+  for (; i< printLen; i++){
+
+    
+
+    Paint_DrawChar((cursorCol*Font24.Width),row*25,'_', &Font24, WHITE, WHITE);
+    Paint_DrawChar((cursorCol*Font24.Width),row*25, printText[i], &Font24, BLACK, WHITE);
+
+    if(row==0){
+      line0[cursorCol]=printText[i];
+    }else if(row == 1){
+      line1[cursorCol]=printText[i];
+    }else if(row == 2){
+      line2[cursorCol]=printText[i];
+    }else if(row == 3){
+      line3[cursorCol]=printText[i];
+    }else if(row == 4){
+      line4[cursorCol]=printText[i];
+    }
+
+    cursorCol +=1;
+
+    if(cursorCol > 16){
+      cursorCol=0;
+      row+=1;
+      if(row > 4){
+        //we've hit bottom, advance all up 1.
+        Paint_Clear(WHITE);
+        strcpy(line0, line1);
+        Paint_DrawString_EN(0,0, line0, &Font24, WHITE, BLACK);
+        strcpy(line1, line2);
+        Paint_DrawString_EN(0,25, line1, &Font24, WHITE, BLACK);
+        strcpy(line2, line3);
+        Paint_DrawString_EN(0,50, line2, &Font24, WHITE, BLACK);
+        strcpy(line3, line4);
+        Paint_DrawString_EN(0,75, line3, &Font24, WHITE, BLACK);
+        row=4;
+      }
+    }
+  }
+  
+  Paint_DrawChar((cursorCol*Font24.Width),row*25, '_', &Font24, BLACK, WHITE);
+
+  EPD_2IN9_V2_Display_Partial(BlackImage);
+
+}
+
+void eink_print_old(char printText[]){
+
+  //the canvas is 5 rows by 17 columns at font 24.
+
+  if(cursorCol==0 && row==0){
+    Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);
+    Paint_Clear(WHITE);
+    Paint_SelectImage(BlackImage);
+  }
 
   int printLen = strlen(printText);
   
   if(cursorCol + printLen > 17){
-    //TODO if the text to be printed contains a space, splice on that and see if it can be written.
     
     char * pch;
     pch = strtok (printText, " ");
-    pch = trimwhitespace(pch);
 
     while (pch != NULL){
       printLen = strlen(pch);
@@ -89,10 +122,10 @@ void eink_print(char printText[]){
       }else{
          Paint_DrawString_EN((cursorCol*Font24.Width),row*25, pch, &Font24, WHITE, BLACK);
          cursorCol+=printLen;
+         Paint_DrawString_EN((cursorCol*Font24.Width),row*25,"_", &Font24, WHITE, WHITE);
       }
 
       pch = strtok (NULL, " ");
-      pch = trimwhitespace(pch);
     }
 
     row+=1;
@@ -100,13 +133,15 @@ void eink_print(char printText[]){
     if(row > 4){
       row=0;
       Paint_Clear(WHITE);
+      Paint_DrawString_EN((cursorCol*Font24.Width),row*25,"_", &Font24, WHITE, BLACK);
     }
 
     strcpy(printText, pch);
   }
 
   //send keystroke to epaper
-  //Paint_ClearWindows((cursorCol*Font24.Width), row*25, Font24.Width, row*25 + Font24.Height, WHITE);
+//  Paint_ClearWindows((cursorCol*Font24.Width), row*25, Font24.Width, row*25 + Font24.Height, WHITE);
+  Paint_DrawString_EN((cursorCol*Font24.Width),row*25,"_", &Font24, WHITE, WHITE);
   Paint_DrawString_EN((cursorCol*Font24.Width),row*25, printText, &Font24, WHITE, BLACK);
 
   //resolution is 296x128=37888
@@ -115,17 +150,20 @@ void eink_print(char printText[]){
   //each "column" of 8 pixels wide is 128bytes in length
   //so there are 4736/128 37 columns of pixels
   
-  EPD_2IN9_V2_Display_Partial(BlackImage);
-  cursorCol+=printLen;
+  cursorCol+=printLen-1;
   if(cursorCol > 16){
+    Paint_DrawString_EN((cursorCol*Font24.Width),row*25,"_", &Font24, WHITE, WHITE);
     cursorCol=0;
     row+=1;
+    Paint_DrawString_EN((cursorCol*Font24.Width),row*25,"_", &Font24, WHITE, BLACK);
   }
 
   if(row > 4){
+    Paint_DrawString_EN((cursorCol*Font24.Width),row*25,"_", &Font24, WHITE, WHITE);
     row=0;
     cursorCol=0;
     Paint_Clear(WHITE);
-    
+    Paint_DrawString_EN((cursorCol*Font24.Width),row*25,"_", &Font24, WHITE, BLACK);
   }
+  EPD_2IN9_V2_Display_Partial(BlackImage);
 }
